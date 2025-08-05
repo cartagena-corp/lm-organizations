@@ -17,4 +17,6 @@ public interface OrganizationService {
     OrganizationResponseDto updateOrganization(UUID id, OrganizationRequestDto organizationRequestDto);
 
     void deleteOrganization(UUID id);
+
+    boolean organizationExists(UUID id);
 }

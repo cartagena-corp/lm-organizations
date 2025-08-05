@@ -68,4 +68,14 @@ public class OrganizationController {
                 .status(HttpStatus.OK)
                 .body(ResponseUtil.success(ConstantUtil.Success.RESOURCE_DELETED_SUCCESSFULLY));
     }
+
+    @GetMapping("/organizationExists/{id}")
+    @RequiresPermission({"ORGANIZATION_READ"})
+    public ResponseEntity<Boolean> organizationExists(@PathVariable String id){
+        UUID uuid = UUID.fromString(id);
+        boolean exists = organizationService.organizationExists(uuid);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(exists);
+    }
 }

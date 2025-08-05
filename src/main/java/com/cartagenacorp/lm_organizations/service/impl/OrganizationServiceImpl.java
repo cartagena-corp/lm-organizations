@@ -76,4 +76,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
         organizationRepository.delete(organization);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean organizationExists(UUID id) {
+        return organizationRepository.existsById(id);
+    }
 }
