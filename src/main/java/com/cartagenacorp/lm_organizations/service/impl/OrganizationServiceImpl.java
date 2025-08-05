@@ -1,0 +1,79 @@
+package com.cartagenacorp.lm_organizations.service.impl;
+
+import com.cartagenacorp.lm_organizations.dto.OrganizationRequestDto;
+import com.cartagenacorp.lm_organizations.dto.OrganizationResponseDto;
+import com.cartagenacorp.lm_organizations.entity.Organization;
+import com.cartagenacorp.lm_organizations.exception.BaseException;
+import com.cartagenacorp.lm_organizations.mapper.OrganizationMapper;
+import com.cartagenacorp.lm_organizations.repository.OrganizationRepository;
+import com.cartagenacorp.lm_organizations.service.OrganizationService;
+import com.cartagenacorp.lm_organizations.util.ConstantUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class OrganizationServiceImpl implements OrganizationService {
+
+    private final OrganizationRepository organizationRepository;
+    private final OrganizationMapper organizationMapper;
+
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper) {
+        this.organizationRepository = organizationRepository;
+        this.organizationMapper = organizationMapper;
+    }
+
+    @Override
+    @Transactional
+    public OrganizationResponseDto createOrganization(OrganizationRequestDto organizationRequestDto){
+        if (organizationRepository.existsByOrganizationName(organizationRequestDto.getOrganizationName())) {
+            throw new BaseException(ConstantUtil.ORGANIZATION_NAME_ALREADY_EXISTS, HttpStatus.CONFLICT.value());
+        }
+        Organization organization = organizationMapper.toEntity(organizationRequestDto);
+        organizationRepository.save(organization);
+        return organizationMapper.toDto(organization);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrganizationResponseDto getOrganizationById(UUID id){
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+        return organizationMapper.toDto(organization);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrganizationResponseDto> getAllOrganizations(){
+        List<Organization> organizations = organizationRepository.findAll();
+        return organizations.stream()
+                .map(organization -> organizationMapper.toDto(organization))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public OrganizationResponseDto updateOrganization(UUID id, OrganizationRequestDto organizationRequestDto){
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+
+        if (organizationRepository.existsByOrganizationName(organizationRequestDto.getOrganizationName())) {
+            throw new BaseException(ConstantUtil.ORGANIZATION_NAME_ALREADY_EXISTS, HttpStatus.CONFLICT.value());
+        }
+
+        Organization updatedOrganization = organizationMapper.partialUpdate(organizationRequestDto, organization);
+        organizationRepository.save(updatedOrganization);
+        return organizationMapper.toDto(updatedOrganization);
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrganization(UUID id) {
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+        organizationRepository.delete(organization);
+    }
+}
