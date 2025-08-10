@@ -26,7 +26,7 @@ public class OrganizationController {
     }
 
     @PostMapping("/createOrganization")
-    @RequiresPermission({"ORGANIZATION_CREATE"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_CREATE"})
     public ResponseEntity<OrganizationResponseDto> createOrganization(@Valid @RequestBody OrganizationRequestDto organizationRequestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -34,7 +34,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/getOrganization/{id}")
-    @RequiresPermission({"ORGANIZATION_READ"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_READ"})
     public ResponseEntity<OrganizationResponseDto> getOrganizationById(@PathVariable String id) {
         UUID uuid = UUID.fromString(id);
         return ResponseEntity
@@ -43,7 +43,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/getAllOrganizations")
-    @RequiresPermission({"ORGANIZATION_READ"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_READ"})
     public ResponseEntity<List<OrganizationResponseDto>> getAllOrganizations(){
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -51,7 +51,7 @@ public class OrganizationController {
     }
 
     @PutMapping("/updateOrganization/{id}")
-    @RequiresPermission({"ORGANIZATION_UPDATE"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_UPDATE"})
     public ResponseEntity<OrganizationResponseDto> updateOrganization(@PathVariable String id, @Valid @RequestBody OrganizationRequestDto organizationRequestDto){
         UUID uuid = UUID.fromString(id);
         return ResponseEntity
@@ -60,7 +60,7 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/deleteOrganization/{id}")
-    @RequiresPermission({"ORGANIZATION_DELETE"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_DELETE"})
     public ResponseEntity<NotificationResponse> deleteOrganization(@PathVariable String  id){
         UUID uuid = UUID.fromString(id);
         organizationService.deleteOrganization(uuid);
@@ -70,7 +70,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/organizationExists/{id}")
-    @RequiresPermission({"ORGANIZATION_READ"})
+    @RequiresPermission({"ORGANIZATION_CONTROL, ORGANIZATION_READ"})
     public ResponseEntity<Boolean> organizationExists(@PathVariable String id){
         UUID uuid = UUID.fromString(id);
         boolean exists = organizationService.organizationExists(uuid);
