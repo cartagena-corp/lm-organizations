@@ -7,7 +7,9 @@ import com.cartagenacorp.lm_organizations.exception.BaseException;
 import com.cartagenacorp.lm_organizations.mapper.OrganizationMapper;
 import com.cartagenacorp.lm_organizations.repository.OrganizationRepository;
 import com.cartagenacorp.lm_organizations.service.OrganizationService;
+import com.cartagenacorp.lm_organizations.service.RoleExternalService;
 import com.cartagenacorp.lm_organizations.util.ConstantUtil;
+import com.cartagenacorp.lm_organizations.util.JwtContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,21 +22,26 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
+    private final RoleExternalService roleExternalService;
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, RoleExternalService roleExternalService) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
+        this.roleExternalService = roleExternalService;
     }
 
     @Override
     @Transactional
     public OrganizationResponseDto createOrganization(OrganizationRequestDto organizationRequestDto){
+        String token = JwtContextHolder.getToken();
         if (organizationRepository.existsByOrganizationName(organizationRequestDto.getOrganizationName())) {
             throw new BaseException(ConstantUtil.ORGANIZATION_NAME_ALREADY_EXISTS, HttpStatus.CONFLICT.value());
         }
         Organization organization = organizationMapper.toEntity(organizationRequestDto);
-        organizationRepository.save(organization);
-        return organizationMapper.toDto(organization);
+        Organization savedOrganization = organizationRepository.save(organization);
+
+        roleExternalService.initializeDefaultRoles(savedOrganization.getOrganizationId(), token);
+        return organizationMapper.toDto(savedOrganization);
     }
 
     @Override
@@ -74,6 +81,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteOrganization(UUID id) {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+
+        String token = JwtContextHolder.getToken();
+
+        roleExternalService.deleteByOrganizationId(organization.getOrganizationId(), token);
         organizationRepository.delete(organization);
     }
 

@@ -13,7 +13,9 @@ public class ConstantUtil {
     public static final String INVALID_UUID = "El ID proporcionado no es un UUID válido";
     public static final String INTERNAL_SERVER_ERROR = "Error interno del servidor";
     public static final String ORGANIZATION_NAME_ALREADY_EXISTS = "El nombre de la organización ya está en uso";
-
+    public static final String ACCESS_EXCEPTION = "El servicio externo no está disponible o no se pudo acceder a él";
+    public static final String ROLE_INITIALIZATION_ERROR = "Error al inicializar roles por defecto";
+    public static final String ROLE_DELETE_ERROR = "Error al eliminar roles de la organización";
 
     public class Success {
 
