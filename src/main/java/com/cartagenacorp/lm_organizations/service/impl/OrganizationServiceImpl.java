@@ -6,6 +6,7 @@ import com.cartagenacorp.lm_organizations.entity.Organization;
 import com.cartagenacorp.lm_organizations.exception.BaseException;
 import com.cartagenacorp.lm_organizations.mapper.OrganizationMapper;
 import com.cartagenacorp.lm_organizations.repository.OrganizationRepository;
+import com.cartagenacorp.lm_organizations.service.ConfigExternalService;
 import com.cartagenacorp.lm_organizations.service.OrganizationService;
 import com.cartagenacorp.lm_organizations.service.RoleExternalService;
 import com.cartagenacorp.lm_organizations.util.ConstantUtil;
@@ -23,11 +24,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
     private final RoleExternalService roleExternalService;
+    private final ConfigExternalService configExternalService;
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, RoleExternalService roleExternalService) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper,
+                                   RoleExternalService roleExternalService, ConfigExternalService configExternalService) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
         this.roleExternalService = roleExternalService;
+        this.configExternalService = configExternalService;
     }
 
     @Override
@@ -41,6 +45,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization savedOrganization = organizationRepository.save(organization);
 
         roleExternalService.initializeDefaultRoles(savedOrganization.getOrganizationId(), token);
+        configExternalService.initializeDefaultProjectStatus(savedOrganization.getOrganizationId(), token);
         return organizationMapper.toDto(savedOrganization);
     }
 
@@ -85,6 +90,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         String token = JwtContextHolder.getToken();
 
         roleExternalService.deleteByOrganizationId(organization.getOrganizationId(), token);
+        configExternalService.deleteByOrganizationId(organization.getOrganizationId(), token);
         organizationRepository.delete(organization);
     }
 

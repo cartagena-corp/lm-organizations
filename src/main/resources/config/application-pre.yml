@@ -9,6 +9,7 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: 'false'
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 server:
   port: '8091'
 app:
@@ -19,3 +20,6 @@ app:
 role:
   service:
     url: http://localhost:8085/api/roles
+config:
+  service:
+    url: http://localhost:8088/api/config

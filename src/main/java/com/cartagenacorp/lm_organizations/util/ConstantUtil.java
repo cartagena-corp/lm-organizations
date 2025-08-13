@@ -16,6 +16,8 @@ public class ConstantUtil {
     public static final String ACCESS_EXCEPTION = "El servicio externo no está disponible o no se pudo acceder a él";
     public static final String ROLE_INITIALIZATION_ERROR = "Error al inicializar roles por defecto";
     public static final String ROLE_DELETE_ERROR = "Error al eliminar roles de la organización";
+    public static final String CONFIG_INITIALIZATION_ERROR = "Error al inicializar configuraciones por defecto";
+    public static final String CONFIG_DELETE_ERROR = "Error al eliminar configuraciones de la organización";
 
     public class Success {
 

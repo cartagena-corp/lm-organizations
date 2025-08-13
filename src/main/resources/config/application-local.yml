@@ -19,3 +19,6 @@ app:
 role:
   service:
     url: http://localhost:8085/api/roles
+config:
+  service:
+    url: http://localhost:8088/api/config
