@@ -22,6 +22,7 @@ public class ConstantUtil {
     public class Success {
 
         public static final String RESOURCE_DELETED_SUCCESSFULLY = "Recurso eliminado correctamente";
+        public static final String PROJECT_ORGANIZATION_CHANGED_SUCCESSFULLY = "Organización del proyecto cambiada correctamente";
 
         public Success() {
             throw new IllegalStateException("Util class");

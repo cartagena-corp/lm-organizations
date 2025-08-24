@@ -78,4 +78,16 @@ public class OrganizationController {
                 .status(HttpStatus.OK)
                 .body(exists);
     }
+
+    @PutMapping("/project/{projectId}/change-organization/{newOrgId}")
+    @RequiresPermission({"ORGANIZATION_CONTROL"})
+    public ResponseEntity<NotificationResponse> changeProjectOrganization(
+            @PathVariable UUID projectId,
+            @PathVariable UUID newOrgId
+    ) {
+        organizationService.changeProjectOrganization(projectId, newOrgId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseUtil.success(ConstantUtil.Success.PROJECT_ORGANIZATION_CHANGED_SUCCESSFULLY));
+    }
 }

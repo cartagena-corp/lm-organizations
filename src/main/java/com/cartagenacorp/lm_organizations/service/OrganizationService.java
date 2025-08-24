@@ -19,4 +19,6 @@ public interface OrganizationService {
     void deleteOrganization(UUID id);
 
     boolean organizationExists(UUID id);
+
+    void changeProjectOrganization(UUID projectId, UUID newOrgId);
 }

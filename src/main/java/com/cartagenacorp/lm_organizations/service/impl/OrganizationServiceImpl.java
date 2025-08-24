@@ -5,6 +5,7 @@ import com.cartagenacorp.lm_organizations.dto.OrganizationResponseDto;
 import com.cartagenacorp.lm_organizations.entity.Organization;
 import com.cartagenacorp.lm_organizations.exception.BaseException;
 import com.cartagenacorp.lm_organizations.mapper.OrganizationMapper;
+import com.cartagenacorp.lm_organizations.repository.CrossDomainRepository;
 import com.cartagenacorp.lm_organizations.repository.OrganizationRepository;
 import com.cartagenacorp.lm_organizations.service.ConfigExternalService;
 import com.cartagenacorp.lm_organizations.service.OrganizationService;
@@ -25,13 +26,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationMapper organizationMapper;
     private final RoleExternalService roleExternalService;
     private final ConfigExternalService configExternalService;
+    private final CrossDomainRepository crossDomainRepository;
 
     public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper,
-                                   RoleExternalService roleExternalService, ConfigExternalService configExternalService) {
+                                   RoleExternalService roleExternalService, ConfigExternalService configExternalService,
+                                   CrossDomainRepository crossDomainRepository) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
         this.roleExternalService = roleExternalService;
         this.configExternalService = configExternalService;
+        this.crossDomainRepository = crossDomainRepository;
     }
 
     @Override
@@ -98,5 +102,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Transactional(readOnly = true)
     public boolean organizationExists(UUID id) {
         return organizationRepository.existsById(id);
+    }
+
+    @Override
+    @Transactional
+    public void changeProjectOrganization(UUID projectId, UUID newOrgId) {
+        crossDomainRepository.updateProjectOrganizationAndResetStatus(projectId, newOrgId);
+        crossDomainRepository.updateProjectConfigOrganization(projectId, newOrgId);
+        crossDomainRepository.updateIssuesOrganization(projectId, newOrgId);
+        crossDomainRepository.updateCommentsOrganization(projectId, newOrgId);
     }
 }
