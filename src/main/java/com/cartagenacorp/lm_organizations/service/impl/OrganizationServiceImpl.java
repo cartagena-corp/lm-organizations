@@ -12,6 +12,8 @@ import com.cartagenacorp.lm_organizations.service.OrganizationService;
 import com.cartagenacorp.lm_organizations.service.RoleExternalService;
 import com.cartagenacorp.lm_organizations.util.ConstantUtil;
 import com.cartagenacorp.lm_organizations.util.JwtContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ import java.util.UUID;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrganizationServiceImpl.class);
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
@@ -41,6 +45,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public OrganizationResponseDto createOrganization(OrganizationRequestDto organizationRequestDto){
+        logger.info("Creando organización");
         String token = JwtContextHolder.getToken();
         if (organizationRepository.existsByOrganizationName(organizationRequestDto.getOrganizationName())) {
             throw new BaseException(ConstantUtil.ORGANIZATION_NAME_ALREADY_EXISTS, HttpStatus.CONFLICT.value());
@@ -50,12 +55,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         roleExternalService.initializeDefaultRoles(savedOrganization.getOrganizationId(), token);
         configExternalService.initializeDefaultProjectStatus(savedOrganization.getOrganizationId(), token);
+        logger.info("Organización creada con ID: {}", savedOrganization.getOrganizationId());
         return organizationMapper.toDto(savedOrganization);
     }
 
     @Override
     @Transactional(readOnly = true)
     public OrganizationResponseDto getOrganizationById(UUID id){
+        logger.info("Consultando organización con ID: {}", id);
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
         return organizationMapper.toDto(organization);
@@ -64,6 +71,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional(readOnly = true)
     public List<OrganizationResponseDto> getAllOrganizations(){
+        logger.info("Consultando todas las organizaciones");
         List<Organization> organizations = organizationRepository.findAll();
         return organizations.stream()
                 .map(organization -> organizationMapper.toDto(organization))
@@ -73,6 +81,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @Transactional
     public OrganizationResponseDto updateOrganization(UUID id, OrganizationRequestDto organizationRequestDto){
+        logger.info("Actualizando organización con ID: {}", id);
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
 
@@ -82,12 +91,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         Organization updatedOrganization = organizationMapper.partialUpdate(organizationRequestDto, organization);
         organizationRepository.save(updatedOrganization);
+        logger.info("Organización con ID {} actualizada correctamente", id);
         return organizationMapper.toDto(updatedOrganization);
     }
 
     @Override
     @Transactional
     public void deleteOrganization(UUID id) {
+        logger.info("Eliminando organización con ID: {}", id);
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
 
@@ -96,6 +107,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         roleExternalService.deleteByOrganizationId(organization.getOrganizationId(), token);
         configExternalService.deleteByOrganizationId(organization.getOrganizationId(), token);
         organizationRepository.delete(organization);
+        logger.info("Organización con ID {} eliminada correctamente", id);
     }
 
     @Override
