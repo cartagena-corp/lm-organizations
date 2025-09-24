@@ -33,6 +33,14 @@ public class OrganizationController {
                 .body(organizationService.createOrganization(organizationRequestDto));
     }
 
+    @GetMapping("/userOrganization/{id}") // se usa en lm-integration (uso interno)
+    public ResponseEntity<OrganizationResponseDto> getUserOrganizationById(@PathVariable String id) {
+        UUID uuid = UUID.fromString(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(organizationService.getUserOrganizationById(uuid));
+    }
+
     @GetMapping("/getOrganization/{id}")
     @RequiresPermission({"ORGANIZATION_CONTROL", "ORGANIZATION_READ"})
     public ResponseEntity<OrganizationResponseDto> getOrganizationById(@PathVariable String id) {

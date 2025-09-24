@@ -10,6 +10,8 @@ public interface OrganizationService {
 
     OrganizationResponseDto createOrganization(OrganizationRequestDto organizationRequestDto);
 
+    OrganizationResponseDto getUserOrganizationById(UUID id);
+
     OrganizationResponseDto getOrganizationById(UUID id);
 
     List<OrganizationResponseDto> getAllOrganizations();

@@ -61,10 +61,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional(readOnly = true)
+    public OrganizationResponseDto getUserOrganizationById(UUID id){
+        logger.info("Consultando organización con ID: {}", id);
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Organización no encontrada con ID: {}", id);
+                    return new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value());
+                });
+        return organizationMapper.toDto(organization);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public OrganizationResponseDto getOrganizationById(UUID id){
         logger.info("Consultando organización con ID: {}", id);
         Organization organization = organizationRepository.findById(id)
-                .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+                .orElseThrow(() -> {
+                    logger.error("Organización no encontrada con ID: {}", id);
+                    return new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value());
+                });
         return organizationMapper.toDto(organization);
     }
 
@@ -100,7 +115,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteOrganization(UUID id) {
         logger.info("Eliminando organización con ID: {}", id);
         Organization organization = organizationRepository.findById(id)
-                .orElseThrow(() -> new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value()));
+                .orElseThrow(() -> {
+                    logger.error("Organización no encontrada con ID: {}", id);
+                    return new BaseException(ConstantUtil.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND.value());
+                });
 
         String token = JwtContextHolder.getToken();
 
