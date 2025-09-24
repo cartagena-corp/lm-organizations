@@ -5,6 +5,7 @@ import com.cartagenacorp.lm_organizations.dto.OrganizationRequestDto;
 import com.cartagenacorp.lm_organizations.dto.OrganizationResponseDto;
 import com.cartagenacorp.lm_organizations.service.OrganizationService;
 import com.cartagenacorp.lm_organizations.util.ConstantUtil;
+import com.cartagenacorp.lm_organizations.util.RequiresAuthentication;
 import com.cartagenacorp.lm_organizations.util.RequiresPermission;
 import com.cartagenacorp.lm_organizations.util.ResponseUtil;
 import jakarta.validation.Valid;
@@ -34,6 +35,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/userOrganization/{id}") // se usa en lm-integration (uso interno)
+    @RequiresAuthentication
     public ResponseEntity<OrganizationResponseDto> getUserOrganizationById(@PathVariable String id) {
         UUID uuid = UUID.fromString(id);
         return ResponseEntity
