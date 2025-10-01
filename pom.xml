@@ -17,6 +17,8 @@
 	<name>lm-organizations</name>
 	<description>Demo project for Spring Boot</description>
 
+	<packaging>war</packaging>
+
 	<url/>
 	<licenses>
 		<license/>
@@ -103,6 +105,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
